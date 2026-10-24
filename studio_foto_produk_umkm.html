@@ -1,0 +1,1427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pro Studio Foto - Membuat Foto Produk Menjadi Profesional Berbasis Teknologi AI</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .checkerboard {
+      background-image: linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+                        linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+                        linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+      background-size: 16px 16px;
+      background-position: 0 0, 0 8px, 8px -8px, -8px 0px;
+    }
+    .dark .checkerboard {
+      background-image: linear-gradient(45deg, #1e293b 25%, transparent 25%),
+                        linear-gradient(-45deg, #1e293b 25%, transparent 25%),
+                        linear-gradient(45deg, transparent 75%, #1e293b 75%),
+                        linear-gradient(-45deg, transparent 75%, #1e293b 75%);
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- ================= TOP HEADER BAR ================= -->
+  <header class="bg-white/95 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 px-4 md:px-8 py-3.5 flex items-center justify-between shadow-xs">
+    <!-- Brand / Title -->
+    <div class="flex items-center gap-3">
+      <!-- App Icon with glow matching screenshot -->
+      <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 via-indigo-500 to-violet-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/30">
+        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg font-bold text-slate-900 dark:text-white leading-tight">Pro Studio Foto</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Membuat Foto Produk Menjadi Profesional Berbasis Teknologi AI</p>
+      </div>
+    </div>
+
+    <!-- Right Quick Actions (History, Lang, Dark Mode) -->
+    <div class="flex items-center gap-2">
+      <!-- History Button -->
+      <button id="btn-history" title="Riwayat Edit" class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 flex items-center justify-center border border-indigo-100 dark:border-slate-700 transition">
+        <i data-lucide="clock" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Language Switcher -->
+      <button id="btn-lang" class="h-10 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 border border-slate-200 dark:border-slate-700 transition">
+        <i data-lucide="languages" class="w-4 h-4"></i>
+        <span id="current-lang">ID</span>
+      </button>
+
+      <!-- Dark/Light Mode Switcher -->
+      <button id="btn-theme-toggle" title="Ubah Mode Tampilan" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 flex items-center justify-center border border-slate-200 dark:border-slate-700 transition">
+        <i id="theme-icon" data-lucide="moon" class="w-5 h-5"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ================= MAIN WORKSPACE ================= -->
+  <main class="flex-1 max-w-[1550px] w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    
+    <!-- LEFT COLUMN: Canvas / Foto Preview (7 Cols) -->
+    <section class="lg:col-span-7 bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm flex flex-col justify-between min-h-[580px] lg:min-h-[720px] relative">
+      
+      <!-- Top Canvas Status & Controls -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800 text-xs">
+        <div class="flex items-center gap-2">
+          <span id="canvas-badge" class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-slate-400" id="status-indicator"></span> Siap Upload
+          </span>
+          <span id="dimension-indicator" class="text-slate-400 hidden sm:inline">1200 x 1200 px</span>
+        </div>
+
+        <div class="flex items-center gap-1">
+          <button id="btn-zoom-in" title="Perbesar" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+            <i data-lucide="zoom-in" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-zoom-out" title="Perkecil" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+            <i data-lucide="zoom-out" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-reset-pos" title="Pusatkan Objek" class="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+            <i data-lucide="scan" class="w-4 h-4"></i>
+          </button>
+          <button id="btn-demo-sample" class="ml-2 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline">
+            Pakai Contoh
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Upload Stage / Interactive Canvas -->
+      <div class="relative flex-1 my-4 rounded-2xl flex items-center justify-center overflow-hidden bg-slate-50 dark:bg-slate-950/60 border border-dashed border-slate-200 dark:border-slate-800 transition-all min-h-[380px]" id="canvas-container">
+        
+        <!-- EMPTY STATE (Exact Match screenshot) -->
+        <div id="empty-state" class="flex flex-col items-center justify-center p-8 text-center space-y-5">
+          <!-- Big Circular Upload Icon -->
+          <div class="w-24 h-24 rounded-full bg-indigo-50/80 dark:bg-indigo-950/50 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shadow-inner">
+            <i data-lucide="image" class="w-10 h-10 stroke-[1.75]"></i>
+          </div>
+
+          <div class="space-y-1">
+            <h3 class="text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100">Upload Foto Produk</h3>
+            <p class="text-xs text-slate-400 max-w-sm">Tarik dan letakkan foto HP Anda di sini, atau gunakan tombol di bawah.</p>
+          </div>
+
+          <!-- Upload & Kamera Buttons (Matching screenshot) -->
+          <div class="flex items-center gap-3 pt-2">
+            <!-- Upload Button -->
+            <button id="btn-trigger-upload" class="px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm shadow-md shadow-indigo-600/25 active:scale-95 transition flex items-center gap-2">
+              <i data-lucide="upload" class="w-4 h-4"></i> Upload
+            </button>
+            <input type="file" id="file-uploader" class="hidden" accept="image/*">
+
+            <!-- Kamera Button -->
+            <button id="btn-trigger-camera" class="px-6 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700/60 text-slate-700 dark:text-slate-200 font-semibold text-sm active:scale-95 transition flex items-center gap-2 shadow-xs">
+              <i data-lucide="aperture" class="w-4 h-4"></i> Kamera
+            </button>
+          </div>
+        </div>
+
+        <!-- ACTIVE CANVAS DISPLAY -->
+        <canvas id="main-canvas" class="hidden max-h-[600px] w-auto max-w-full object-contain cursor-grab active:cursor-grabbing rounded-xl shadow-lg"></canvas>
+
+        <!-- WEBCAM REAL-TIME VIEWER (if user clicks Kamera) -->
+        <div id="camera-modal" class="hidden absolute inset-0 bg-slate-950 flex flex-col items-center justify-center p-4 z-20">
+          <video id="webcam-video" autoplay playsinline class="w-full max-w-md h-auto rounded-2xl border border-slate-700"></video>
+          <div class="flex items-center gap-3 mt-4">
+            <button id="btn-snap-photo" class="px-5 py-2.5 rounded-xl bg-indigo-600 text-white font-bold text-xs flex items-center gap-2 shadow-lg">
+              <i data-lucide="camera" class="w-4 h-4"></i> Ambil Foto Sekarang
+            </button>
+            <button id="btn-close-camera" class="px-4 py-2.5 rounded-xl bg-slate-800 text-slate-300 text-xs">
+              Batal
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Canvas Footer & Download Button -->
+      <div class="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+        <div class="flex items-center gap-2 text-slate-500">
+          <i data-lucide="info" class="w-4 h-4 text-indigo-500"></i>
+          <span>Tips: Seret foto langsung pada kanvas untuk mengubah posisinya.</span>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button id="btn-reupload" class="hidden px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-semibold text-slate-700 dark:text-slate-200 transition">
+            Ganti Foto
+          </button>
+          <button id="btn-download" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold shadow-md shadow-emerald-500/20 active:scale-95 transition flex items-center gap-2">
+            <i data-lucide="download" class="w-4 h-4"></i> Download Foto HD
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- RIGHT COLUMN: AI Tools, Retouch & Studio Editor (5 Cols) -->
+    <section class="lg:col-span-5 space-y-4">
+
+      <!-- ================= 2 BIG ACTION BUTTONS (Exact Match) ================= -->
+      
+      <!-- 1. ANALISA KELAYAKAN FOTO -->
+      <button id="btn-analisa" class="w-full py-4 px-5 rounded-2xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-bold text-sm tracking-wider uppercase transition shadow-xs flex items-center justify-center gap-2 active:scale-98">
+        <i data-lucide="sparkles" class="w-4 h-4 text-indigo-500"></i>
+        <span>ANALISA KELAYAKAN FOTO</span>
+      </button>
+
+      <!-- 2. AUTO FIX + RETOUCH -->
+      <button id="btn-autofix" class="w-full py-4 px-5 rounded-2xl bg-slate-200/80 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-750 text-slate-700 dark:text-slate-200 font-bold text-sm tracking-wider uppercase transition shadow-xs flex items-center justify-center gap-2 active:scale-98">
+        <i data-lucide="wand-2" class="w-4 h-4 text-amber-500"></i>
+        <span>AUTO FIX + RETOUCH</span>
+      </button>
+
+      <!-- ================= 4 TABS NAVIGATION (Exact Match) ================= -->
+      <div class="bg-slate-100 dark:bg-slate-900 p-1.5 rounded-2xl grid grid-cols-4 gap-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
+        <button data-tab="tab-edit" class="tab-btn active bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 rounded-xl py-2.5 px-1 shadow-xs text-center transition flex flex-col items-center justify-center">
+          EDIT FOTO
+        </button>
+        <button data-tab="tab-flyer" class="tab-btn hover:text-slate-700 dark:hover:text-slate-200 rounded-xl py-2.5 px-1 text-center transition leading-tight flex flex-col items-center justify-center">
+          <span>FLYER PROMPT</span>
+          <span class="text-[9px] font-normal opacity-80">GENERATOR</span>
+        </button>
+        <button data-tab="tab-video" class="tab-btn hover:text-slate-700 dark:hover:text-slate-200 rounded-xl py-2.5 px-1 text-center transition leading-tight flex flex-col items-center justify-center">
+          <span>VIDEO PROMPT</span>
+          <span class="text-[9px] font-normal opacity-80">GENERATOR</span>
+        </button>
+        <button data-tab="tab-caption" class="tab-btn hover:text-slate-700 dark:hover:text-slate-200 rounded-xl py-2.5 px-1 text-center transition leading-tight flex flex-col items-center justify-center">
+          <span>CAPTION</span>
+          <span class="text-[9px] font-normal opacity-80">GENERATOR</span>
+        </button>
+      </div>
+
+      <!-- ================= TAB CONTENT PANELS ================= -->
+
+      <!-- TAB 1: STUDIO EDITOR (Default View Matching Screenshot) -->
+      <div id="tab-edit" class="tab-pane bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-6">
+        
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Studio Editor</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Konfigurasi latar panggung, pencahayaan, dan isolasi produk.</p>
+        </div>
+
+        <!-- 1. TEMPLATE PROMPT (AKSI CEPAT) - Matching screenshot -->
+        <div class="bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 space-y-2">
+          <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 uppercase tracking-wide">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-500"></i> TEMPLATE PROMPT (AKSI CEPAT)
+          </label>
+          <select id="template-prompt-select" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition font-medium">
+            <option value="">-- Pilih Template --</option>
+            <option value="minimal_warm">🏛️ Podium Minimalis Marmer Mewah (Skincare / Kosmetik)</option>
+            <option value="cafe_wood">☕ Meja Kayu Kafe Estetik (Kopi, Makanan & Minuman)</option>
+            <option value="marketplace_clean">🛒 Marketplace Bersih Putih 100% (Tokopedia & Shopee)</option>
+            <option value="sage_nature">🌿 Suasana Alam Segar Sage Green (Herbal & Organik)</option>
+            <option value="dark_luxury">✨ Dark Luxury Spotlight (Jam Tangan, Gadget & Fashion)</option>
+            <option value="pastel_sweet">🍬 Warna Pastel Ceria (Aksesoris & Fashion Remaja)</option>
+          </select>
+        </div>
+
+        <!-- 2. HAPUS LATAR BELAKANG (BG CUTOUT) -->
+        <div class="space-y-3 pt-1">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+              <i data-lucide="scissors" class="w-3.5 h-3.5"></i> Potong Background Foto HP
+            </label>
+            <span id="cutout-status" class="text-[10px] font-semibold text-indigo-500">Foto Asli</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <button id="btn-cut-white" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 transition">
+              <span class="w-2.5 h-2.5 rounded-full bg-white border border-slate-300"></span> Hapus Latar Terang
+            </button>
+            <button id="btn-cut-dark" class="py-2.5 px-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/80 hover:border-indigo-400 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2 transition">
+              <span class="w-2.5 h-2.5 rounded-full bg-slate-900 border border-slate-600"></span> Hapus Latar Gelap
+            </button>
+          </div>
+
+          <div class="flex items-center justify-between text-xs pt-1">
+            <button id="btn-restore-bg" class="text-xs text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 flex items-center gap-1">
+              <i data-lucide="rotate-ccw" class="w-3 h-3"></i> Kembalikan Foto Asli
+            </button>
+            <div class="flex items-center gap-2 text-slate-400">
+              <span>Toleransi:</span>
+              <input type="range" id="cut-tolerance" min="10" max="70" value="32" class="w-20 accent-indigo-600">
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. PENYESUAIAN CAHAYA & STUDIO LIGHTING -->
+        <div class="space-y-4 pt-1 border-t border-slate-100 dark:border-slate-800">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block pt-1">
+            Pencahayaan Studio Produk
+          </label>
+
+          <!-- Brightness -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              <span>Kecerahan (Brightness)</span>
+              <span id="val-bright">105%</span>
+            </div>
+            <input type="range" id="range-bright" min="50" max="170" value="105" class="w-full accent-indigo-600">
+          </div>
+
+          <!-- Contrast -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              <span>Kontras (Contrast)</span>
+              <span id="val-contrast">110%</span>
+            </div>
+            <input type="range" id="range-contrast" min="60" max="180" value="110" class="w-full accent-indigo-600">
+          </div>
+
+          <!-- Saturation / Vibrance -->
+          <div>
+            <div class="flex justify-between text-xs font-medium text-slate-600 dark:text-slate-300 mb-1">
+              <span>Kejenuhan Warna (Vibrance)</span>
+              <span id="val-sat">115%</span>
+            </div>
+            <input type="range" id="range-sat" min="40" max="190" value="115" class="w-full accent-indigo-600">
+          </div>
+        </div>
+
+        <!-- 4. PODIUM & BAYANGAN (SHADOW) -->
+        <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Podium 3D & Bayangan
+            </label>
+            <div class="flex items-center gap-1.5">
+              <input type="checkbox" id="check-shadow" checked class="rounded text-indigo-600">
+              <span class="text-xs text-slate-500">Bayangan</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2">
+            <button data-podium="none" class="podium-btn active py-2 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold text-center">
+              Polos
+            </button>
+            <button data-podium="marble" class="podium-btn py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-600 dark:text-slate-300 text-xs font-semibold text-center">
+              Podium Marmer
+            </button>
+            <button data-podium="wood" class="podium-btn py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-600 dark:text-slate-300 text-xs font-semibold text-center">
+              Meja Kayu
+            </button>
+          </div>
+        </div>
+
+        <!-- 5. TEKS PROMO & HARGA (OPSIONAL) -->
+        <div class="space-y-3 pt-1 border-t border-slate-100 dark:border-slate-800">
+          <div class="flex items-center justify-between">
+            <label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Label Promosi & Harga
+            </label>
+            <input type="checkbox" id="check-show-text" checked class="rounded text-indigo-600">
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <input type="text" id="input-brand" value="PRODUK UMKM INDONESIA" placeholder="Nama Brand" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none">
+            <input type="text" id="input-price" value="Rp 49.000" placeholder="Harga Promo" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-bold text-emerald-500 focus:outline-none">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- TAB 2: FLYER PROMPT GENERATOR -->
+      <div id="tab-flyer" class="tab-pane hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Flyer Prompt Generator</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Buat instruksi AI (Midjourney, Stable Diffusion, DALL-E) untuk desain brosur & flyer.</p>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Gaya Desain Flyer</label>
+            <select id="flyer-style" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-slate-200">
+              <option value="minimalist">Minimalis Modern Scandinavian</option>
+              <option value="bold">Bold & Eye-catching Sale Marketplace</option>
+              <option value="luxury">Luxury Gold & Elegant Dark Studio</option>
+              <option value="organic">Fresh Organic Nature & Pastel</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Pesan Utama / Promo</label>
+            <input type="text" id="flyer-headline" value="Diskon 50% Launching Produk Baru" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-800 dark:text-slate-200">
+          </div>
+
+          <button id="btn-generate-flyer-prompt" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+            <i data-lucide="sparkle" class="w-4 h-4"></i> Generate Prompt Flyer
+          </button>
+
+          <div class="relative">
+            <textarea id="output-flyer-prompt" rows="5" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 text-xs font-mono text-slate-700 dark:text-slate-300 focus:outline-none"></textarea>
+            <button id="btn-copy-flyer" class="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px] border border-indigo-200 dark:border-slate-700">
+              Salin Prompt
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 3: VIDEO PROMPT GENERATOR -->
+      <div id="tab-video" class="tab-pane hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Video Prompt Generator</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Buat prompt gerak video produk untuk AI Video (Runway Gen-2, Luma Dream Machine, Sora, Kling).</p>
+        </div>
+
+        <!-- Mode Selector: Otomatis vs Custom -->
+        <div class="flex items-center p-1 bg-slate-100 dark:bg-slate-800/80 rounded-xl text-xs font-semibold">
+          <button id="btn-video-mode-auto" class="flex-1 py-1.5 px-3 rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-xs transition flex items-center justify-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Preset Otomatis
+          </button>
+          <button id="btn-video-mode-custom" class="flex-1 py-1.5 px-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition flex items-center justify-center gap-1.5">
+            <i data-lucide="sliders" class="w-3.5 h-3.5"></i> Custom Prompt
+          </button>
+        </div>
+
+        <!-- Mode Otomatis View -->
+        <div id="video-auto-view" class="space-y-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Gerakan Kamera (Camera Motion)</label>
+            <select id="video-motion" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-slate-200">
+              <option value="spin">Slow 360 Turntable Orbit (Produk Berputar Mewah)</option>
+              <option value="dolly">Cinematic Dolly Zoom In & Soft Focus Bokeh</option>
+              <option value="pedestal">Rising Pedestal with Dramatic Soft Studio Light</option>
+              <option value="water">Splash / Water Droplet Ultra Slow-Motion Macro</option>
+              <option value="floating">Zero Gravity Levitation & Floating Particles</option>
+              <option value="reveal">Dramatic Light Sweep & Shadow Silhouette Reveal</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Mode Custom View (Bisa kustom teks bebas + parameter tambahan) -->
+        <div id="video-custom-view" class="hidden space-y-3">
+          <div>
+            <div class="flex items-center justify-between mb-1">
+              <label class="text-xs font-bold text-slate-600 dark:text-slate-300">Deskripsi / Konsep Kustom Video</label>
+              <span class="text-[10px] text-slate-400">Bebas ketik ide visual</span>
+            </div>
+            <textarea id="video-custom-input" rows="3" placeholder="Contoh: Botol parfum mewah di atas batu basalt basah, kabut tipis di sekitarnya, cahaya senja golden hour, kelopak mawar berjatuhan perlahan..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none transition"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1">Target AI Model</label>
+              <select id="video-target-model" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs text-slate-700 dark:text-slate-200">
+                <option value="Kling AI / Runway Gen-3">Runway Gen-3 / Kling AI</option>
+                <option value="Luma Dream Machine">Luma Dream Machine</option>
+                <option value="OpenAI Sora">OpenAI Sora</option>
+                <option value="Hailuo Minimax">Hailuo Minimax</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1">Mood / Pencahayaan</label>
+              <select id="video-lighting-mood" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-2 text-xs text-slate-700 dark:text-slate-200">
+                <option value="soft commercial studio lighting with diffuse softbox reflections">Studio Softbox Halus</option>
+                <option value="warm cinematic golden hour sunlight with sun flares">Golden Hour Hangat</option>
+                <option value="moody dark aesthetic with neon rim light">Dark & Neon Edge</option>
+                <option value="bright airy minimalist daylight">Cerah Alami (Daylight)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-slate-500 dark:text-slate-400 block mb-1">Efek Fisika Tambahan (Opsional)</label>
+            <div class="flex flex-wrap gap-1.5 text-[11px]">
+              <button type="button" class="video-chip px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400" data-chip="smoke and steam floating gently">Asap / Uap Halus</button>
+              <button type="button" class="video-chip px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400" data-chip="slow-motion water splash droplets">Percikan Air</button>
+              <button type="button" class="video-chip px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400" data-chip="falling gold dust particles">Partikel Emas</button>
+              <button type="button" class="video-chip px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-400" data-chip="soft bokeh blur in background">Bokeh Blur</button>
+            </div>
+          </div>
+        </div>
+
+        <button id="btn-generate-video-prompt" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+          <i data-lucide="video" class="w-4 h-4"></i> Generate Prompt Video
+        </button>
+
+        <div class="relative">
+          <textarea id="output-video-prompt" rows="5" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 text-xs font-mono text-slate-700 dark:text-slate-300 focus:outline-none"></textarea>
+          <button id="btn-copy-video" class="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px] border border-indigo-200 dark:border-slate-700">
+            Salin Prompt
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 4: CAPTION GENERATOR -->
+      <div id="tab-caption" class="tab-pane hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900 dark:text-white">Caption Generator</h2>
+          <p class="text-xs text-slate-400 mt-0.5">Buat copywriting promosi siap tempel di Instagram, TikTok Shop, & WhatsApp.</p>
+        </div>
+
+        <div class="space-y-3">
+          <div>
+            <label class="text-xs font-bold text-slate-600 dark:text-slate-300 block mb-1">Tone Suara (Gaya Bicara)</label>
+            <select id="caption-tone" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2.5 text-xs text-slate-800 dark:text-slate-200">
+              <option value="fomo">Urgent & FOMO ("Stok Menipis, Khusus Hari Ini!")</option>
+              <option value="storytelling">Storytelling & Sentuhan Emosional UMKM</option>
+              <option value="friendly">Ramah, Santai & Akrab (Gen Z / TikTok)</option>
+              <option value="formal">Profesional & Terpercaya</option>
+            </select>
+          </div>
+
+          <button id="btn-generate-caption" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition flex items-center justify-center gap-2">
+            <i data-lucide="message-square-plus" class="w-4 h-4"></i> Buat Caption Penjualan
+          </button>
+
+          <div class="relative">
+            <textarea id="output-caption" rows="6" readonly class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-3 text-xs text-slate-700 dark:text-slate-300 focus:outline-none"></textarea>
+            <button id="btn-copy-caption" class="absolute top-2 right-2 px-2.5 py-1 rounded-lg bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 font-semibold text-[10px] border border-indigo-200 dark:border-slate-700">
+              Salin Caption
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= MODAL: ANALISA KELAYAKAN FOTO ================= -->
+  <div id="modal-analisa" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 animate-in fade-in duration-200">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 flex items-center justify-center">
+            <i data-lucide="scan-face" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Analisa Kelayakan Foto AI</h3>
+            <p class="text-[11px] text-slate-400">Pemeriksaan standar e-commerce & marketplace</p>
+          </div>
+        </div>
+        <button id="btn-close-analisa" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Score Box -->
+      <div class="bg-indigo-50 dark:bg-slate-800/80 rounded-2xl p-4 text-center border border-indigo-100 dark:border-slate-700">
+        <span class="text-xs font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider">Skor Kelayakan Iklan</span>
+        <div class="text-4xl font-extrabold text-slate-900 dark:text-white mt-1" id="analisa-score">88/100</div>
+        <p class="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1" id="analisa-badge">Sangat Layak untuk Promosi & Marketplace</p>
+      </div>
+
+      <!-- Breakdown Points -->
+      <div class="space-y-3 text-xs">
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+          <span class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+            <i data-lucide="sun" class="w-4 h-4 text-amber-500"></i> Pencahayaan & Ketajaman
+          </span>
+          <span class="font-bold text-emerald-500" id="analisa-light">Bagus (Optimal)</span>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+          <span class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+            <i data-lucide="layers" class="w-4 h-4 text-indigo-500"></i> Isolasi Background
+          </span>
+          <span class="font-bold text-indigo-500" id="analisa-bg">Fokus Utama Jelas</span>
+        </div>
+        <div class="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-slate-800/50">
+          <span class="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+            <i data-lucide="maximize" class="w-4 h-4 text-emerald-500"></i> Proporsi & Komposisi
+          </span>
+          <span class="font-bold text-emerald-500">Tepat di Tengah (Center)</span>
+        </div>
+      </div>
+
+      <!-- AI Recommendation -->
+      <div class="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/40 rounded-xl p-3 text-xs text-amber-800 dark:text-amber-300">
+        <p class="font-bold mb-0.5">Saran Rekomendasi:</p>
+        <p id="analisa-advice">Gunakan template 'Podium Minimalis' atau 'Marketplace Bersih' untuk mendongkrak konversi klik pembeli.</p>
+      </div>
+
+      <button id="btn-apply-from-analisa" class="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md transition">
+        Terapkan Auto Fix Sekarang
+      </button>
+    </div>
+  </div>
+
+  <!-- ================= NOTIFICATION TOAST ================= -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-5 py-3.5 rounded-2xl shadow-xl text-xs font-semibold">
+    <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+    <span id="toast-text">Tindakan berhasil!</span>
+  </div>
+
+  <!-- ================= APPLICATION JAVASCRIPT ================= -->
+  <script>
+    // --- Application State ---
+    const appState = {
+      imageLoaded: false,
+      rawImage: null,
+      processedImage: null,
+      isCutout: false,
+      tolerance: 32,
+
+      // Posisi & Transform
+      scale: 0.8,
+      posX: 0,
+      posY: 20,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+
+      // Studio Props
+      templateTheme: '',
+      podium: 'none',
+      hasShadow: true,
+
+      // Studio Filters
+      brightness: 105,
+      contrast: 110,
+      saturate: 115,
+
+      // Text elements
+      showText: true,
+      brandText: 'PRODUK UMKM INDONESIA',
+      priceText: 'Rp 49.000',
+
+      // Camera stream
+      mediaStream: null
+    };
+
+    // DOM Elements
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+    const emptyState = document.getElementById('empty-state');
+    const fileUploader = document.getElementById('file-uploader');
+
+    // On Load
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupTabs();
+      setupThemeAndLang();
+      setupEventListeners();
+      setupGenerators();
+    });
+
+    // Theme (Dark/Light) & Language Switcher
+    function setupThemeAndLang() {
+      const themeBtn = document.getElementById('btn-theme-toggle');
+      const themeIcon = document.getElementById('theme-icon');
+      
+      themeBtn.addEventListener('click', () => {
+        const isDark = document.documentElement.classList.toggle('dark');
+        themeIcon.setAttribute('data-lucide', isDark ? 'sun' : 'moon');
+        lucide.createIcons();
+        showToast(isDark ? 'Mode Gelap Aktif' : 'Mode Terang Aktif');
+      });
+
+      const langBtn = document.getElementById('btn-lang');
+      const currentLang = document.getElementById('current-lang');
+      langBtn.addEventListener('click', () => {
+        const newLang = currentLang.innerText === 'ID' ? 'EN' : 'ID';
+        currentLang.innerText = newLang;
+        showToast(`Bahasa diganti: ${newLang}`);
+      });
+    }
+
+    // Tab Switching Logic
+    function setupTabs() {
+      const tabs = document.querySelectorAll('.tab-btn');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          const target = tab.dataset.tab;
+
+          // Buttons UI
+          tabs.forEach(t => {
+            t.classList.remove('active', 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-xs');
+            t.classList.add('text-slate-500', 'dark:text-slate-400');
+          });
+          tab.classList.add('active', 'bg-white', 'dark:bg-slate-800', 'text-indigo-600', 'dark:text-indigo-400', 'shadow-xs');
+          tab.classList.remove('text-slate-500', 'dark:text-slate-400');
+
+          // Panes UI
+          document.querySelectorAll('.tab-pane').forEach(p => p.classList.add('hidden'));
+          const targetPane = document.getElementById(target);
+          if (targetPane) targetPane.classList.remove('hidden');
+        });
+      });
+    }
+
+    // Event Listeners for Buttons & Canvas
+    function setupEventListeners() {
+      // Trigger File Upload
+      document.getElementById('btn-trigger-upload').addEventListener('click', () => fileUploader.click());
+      document.getElementById('btn-reupload').addEventListener('click', () => fileUploader.click());
+      fileUploader.addEventListener('change', handleUpload);
+
+      // Trigger Webcam / Camera
+      document.getElementById('btn-trigger-camera').addEventListener('click', startWebcam);
+      document.getElementById('btn-close-camera').addEventListener('click', stopWebcam);
+      document.getElementById('btn-snap-photo').addEventListener('click', captureWebcam);
+
+      // Demo Sample Product
+      document.getElementById('btn-demo-sample').addEventListener('click', loadSampleProduct);
+
+      // Zoom & Reset
+      document.getElementById('btn-zoom-in').addEventListener('click', () => {
+        appState.scale = Math.min(1.6, appState.scale + 0.1);
+        render();
+      });
+      document.getElementById('btn-zoom-out').addEventListener('click', () => {
+        appState.scale = Math.max(0.3, appState.scale - 0.1);
+        render();
+      });
+      document.getElementById('btn-reset-pos').addEventListener('click', () => {
+        appState.posX = 0;
+        appState.posY = 0;
+        render();
+        showToast('Posisi produk dipusatkan');
+      });
+
+      // Quick Action 1: Analisa Kelayakan Foto
+      document.getElementById('btn-analisa').addEventListener('click', () => {
+        if (!appState.imageLoaded) {
+          loadSampleProduct();
+        }
+        document.getElementById('modal-analisa').classList.remove('hidden');
+        document.getElementById('modal-analisa').classList.add('flex');
+      });
+      document.getElementById('btn-close-analisa').addEventListener('click', () => {
+        document.getElementById('modal-analisa').classList.add('hidden');
+        document.getElementById('modal-analisa').classList.remove('flex');
+      });
+      document.getElementById('btn-apply-from-analisa').addEventListener('click', () => {
+        document.getElementById('modal-analisa').classList.add('hidden');
+        document.getElementById('modal-analisa').classList.remove('flex');
+        applyAutoFix();
+      });
+
+      // Quick Action 2: Auto Fix + Retouch
+      document.getElementById('btn-autofix').addEventListener('click', () => {
+        if (!appState.imageLoaded) {
+          loadSampleProduct();
+        }
+        applyAutoFix();
+      });
+
+      // Template Prompt Dropdown (Aksi Cepat)
+      document.getElementById('template-prompt-select').addEventListener('change', (e) => {
+        const val = e.target.value;
+        appState.templateTheme = val;
+
+        if (val === 'minimal_warm') {
+          appState.podium = 'marble';
+          appState.brightness = 108;
+          appState.contrast = 112;
+        } else if (val === 'cafe_wood') {
+          appState.podium = 'wood';
+          appState.brightness = 104;
+          appState.contrast = 118;
+        } else if (val === 'marketplace_clean') {
+          appState.podium = 'none';
+          appState.brightness = 115;
+          appState.contrast = 105;
+        } else if (val === 'sage_nature') {
+          appState.podium = 'marble';
+          appState.brightness = 106;
+          appState.contrast = 110;
+        } else if (val === 'dark_luxury') {
+          appState.podium = 'none';
+          appState.brightness = 102;
+          appState.contrast = 125;
+        } else if (val === 'pastel_sweet') {
+          appState.podium = 'marble';
+          appState.brightness = 110;
+          appState.contrast = 108;
+        }
+
+        syncSliderUI();
+        syncPodiumButtons();
+        render();
+        if (val) showToast('Template panggung berhasil diterapkan!');
+      });
+
+      // Cutout Buttons
+      document.getElementById('btn-cut-white').addEventListener('click', () => applyChromaCutout('white'));
+      document.getElementById('btn-cut-dark').addEventListener('click', () => applyChromaCutout('dark'));
+      document.getElementById('btn-restore-bg').addEventListener('click', () => {
+        if (!appState.rawImage) return;
+        appState.processedImage = appState.rawImage;
+        appState.isCutout = false;
+        document.getElementById('cutout-status').innerText = 'Foto Asli';
+        render();
+        showToast('Background asli dikembalikan');
+      });
+
+      // Cutout Tolerance Slider
+      document.getElementById('cut-tolerance').addEventListener('input', (e) => {
+        appState.tolerance = parseInt(e.target.value);
+      });
+
+      // Lighting Sliders
+      document.getElementById('range-bright').addEventListener('input', (e) => {
+        appState.brightness = parseInt(e.target.value);
+        document.getElementById('val-bright').innerText = `${appState.brightness}%`;
+        render();
+      });
+      document.getElementById('range-contrast').addEventListener('input', (e) => {
+        appState.contrast = parseInt(e.target.value);
+        document.getElementById('val-contrast').innerText = `${appState.contrast}%`;
+        render();
+      });
+      document.getElementById('range-sat').addEventListener('input', (e) => {
+        appState.saturate = parseInt(e.target.value);
+        document.getElementById('val-sat').innerText = `${appState.saturate}%`;
+        render();
+      });
+
+      // Podium Buttons
+      document.querySelectorAll('.podium-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          appState.podium = btn.dataset.podium;
+          syncPodiumButtons();
+          render();
+        });
+      });
+
+      // Checkboxes & Text
+      document.getElementById('check-shadow').addEventListener('change', (e) => {
+        appState.hasShadow = e.target.checked;
+        render();
+      });
+      document.getElementById('check-show-text').addEventListener('change', (e) => {
+        appState.showText = e.target.checked;
+        render();
+      });
+      document.getElementById('input-brand').addEventListener('input', (e) => {
+        appState.brandText = e.target.value;
+        render();
+      });
+      document.getElementById('input-price').addEventListener('input', (e) => {
+        appState.priceText = e.target.value;
+        render();
+      });
+
+      // Drag Object in Canvas
+      canvas.addEventListener('mousedown', (e) => {
+        appState.isDragging = true;
+        const rect = canvas.getBoundingClientRect();
+        appState.startX = e.clientX - rect.left;
+        appState.startY = e.clientY - rect.top;
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!appState.isDragging) return;
+        const rect = canvas.getBoundingClientRect();
+        const curX = e.clientX - rect.left;
+        const curY = e.clientY - rect.top;
+        const scaleFactor = canvas.width / rect.width;
+
+        appState.posX += (curX - appState.startX) * scaleFactor;
+        appState.posY += (curY - appState.startY) * scaleFactor;
+        appState.startX = curX;
+        appState.startY = curY;
+        render();
+      });
+
+      window.addEventListener('mouseup', () => {
+        appState.isDragging = false;
+      });
+
+      // Download HD
+      document.getElementById('btn-download').addEventListener('click', downloadCanvasHD);
+
+      // History button
+      document.getElementById('btn-history').addEventListener('click', () => {
+        showToast('Menampilkan 5 riwayat edit terakhir');
+      });
+    }
+
+    // Synchronize UI values with State
+    function syncSliderUI() {
+      document.getElementById('range-bright').value = appState.brightness;
+      document.getElementById('range-contrast').value = appState.contrast;
+      document.getElementById('range-sat').value = appState.saturate;
+      document.getElementById('val-bright').innerText = `${appState.brightness}%`;
+      document.getElementById('val-contrast').innerText = `${appState.contrast}%`;
+      document.getElementById('val-sat').innerText = `${appState.saturate}%`;
+    }
+
+    function syncPodiumButtons() {
+      document.querySelectorAll('.podium-btn').forEach(b => {
+        if (b.dataset.podium === appState.podium) {
+          b.className = 'podium-btn active py-2 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 text-xs font-bold text-center';
+        } else {
+          b.className = 'podium-btn py-2 rounded-xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-600 dark:text-slate-300 text-xs font-semibold text-center';
+        }
+      });
+    }
+
+    // 1-Click Auto Fix + Retouch
+    function applyAutoFix() {
+      appState.brightness = 112;
+      appState.contrast = 118;
+      appState.saturate = 125;
+      appState.hasShadow = true;
+      if (!appState.templateTheme) {
+        appState.templateTheme = 'minimal_warm';
+        appState.podium = 'marble';
+        document.getElementById('template-prompt-select').value = 'minimal_warm';
+      }
+      syncSliderUI();
+      syncPodiumButtons();
+      render();
+      showToast('Pencahayaan foto HP berhasil disempurnakan!');
+    }
+
+    // File Upload Handler
+    function handleUpload(e) {
+      if (e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            activateCanvas(img);
+            showToast('Foto berhasil dimuat!');
+          };
+          img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    // Activate Canvas Stage
+    function activateCanvas(img) {
+      appState.imageLoaded = true;
+      appState.rawImage = img;
+      appState.processedImage = img;
+      appState.isCutout = false;
+      appState.posX = 0;
+      appState.posY = 20;
+
+      canvas.width = 1200;
+      canvas.height = 1200;
+
+      emptyState.classList.add('hidden');
+      canvas.classList.remove('hidden');
+      document.getElementById('btn-reupload').classList.remove('hidden');
+
+      document.getElementById('canvas-badge').innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span> Siap Diedit';
+      render();
+    }
+
+    // Load High-Quality SVG Sample Product
+    function loadSampleProduct() {
+      const sampleSvg = `
+      <svg xmlns="http://www.w3.org/2000/svg" width="600" height="850" viewBox="0 0 600 850">
+        <defs>
+          <linearGradient id="pouch" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#1f2937" />
+            <stop offset="35%" stop-color="#374151" />
+            <stop offset="65%" stop-color="#4b5563" />
+            <stop offset="100%" stop-color="#111827" />
+          </linearGradient>
+          <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#f59e0b" />
+            <stop offset="50%" stop-color="#fde68a" />
+            <stop offset="100%" stop-color="#d97706" />
+          </linearGradient>
+        </defs>
+        <!-- Package Outline -->
+        <path d="M140 160 L460 160 C480 160 495 180 490 220 L455 740 C450 780 410 800 300 800 C190 800 150 780 145 740 L110 220 C105 180 120 160 140 160 Z" fill="url(#pouch)"/>
+        <!-- Label Front -->
+        <rect x="180" y="320" width="240" height="340" rx="16" fill="#f8fafc" />
+        <rect x="195" y="335" width="210" height="310" rx="12" fill="none" stroke="url(#gold)" stroke-width="3"/>
+        <text x="300" y="380" font-family="'Plus Jakarta Sans', sans-serif" font-weight="800" font-size="16" fill="#b45309" text-anchor="middle" letter-spacing="2">INDONESIAN SPECIALTY</text>
+        <circle cx="300" cy="440" r="32" fill="#1e1b4b"/>
+        <text x="300" y="452" font-size="28" fill="#fde68a" text-anchor="middle">☕</text>
+        <text x="300" y="520" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="26" fill="#0f172a" text-anchor="middle">KOPI ROBUSTA</text>
+        <text x="300" y="550" font-family="'Plus Jakarta Sans', sans-serif" font-size="14" fill="#64748b" text-anchor="middle">Petik Merah Pilihan</text>
+        <rect x="230" y="580" width="140" height="30" rx="15" fill="url(#gold)"/>
+        <text x="300" y="600" font-family="'Plus Jakarta Sans', sans-serif" font-weight="bold" font-size="12" fill="#451a03" text-anchor="middle">NETTO: 200 GRAM</text>
+      </svg>`;
+
+      const blob = new Blob([sampleSvg], { type: 'image/svg+xml' });
+      const img = new Image();
+      img.onload = () => {
+        activateCanvas(img);
+        showToast('Contoh kemasan produk kopi dimuat!');
+      };
+      img.src = URL.createObjectURL(blob);
+    }
+
+    // Chroma Key / Cutout Logic
+    function applyChromaCutout(mode) {
+      if (!appState.rawImage) {
+        showToast('Unggah foto produk terlebih dahulu!', true);
+        return;
+      }
+
+      showToast('Memisahkan background produk...');
+      const off = document.createElement('canvas');
+      const offCtx = off.getContext('2d');
+      const w = appState.rawImage.width;
+      const h = appState.rawImage.height;
+
+      off.width = w;
+      off.height = h;
+      offCtx.drawImage(appState.rawImage, 0, 0);
+
+      const imgData = offCtx.getImageData(0, 0, w, h);
+      const data = imgData.data;
+      const tol = appState.tolerance * 2.6;
+
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const avg = (r + g + b) / 3;
+
+        let remove = false;
+        if (mode === 'white') {
+          if (avg > (255 - tol) && Math.abs(r - g) < 25 && Math.abs(g - b) < 25) {
+            remove = true;
+          }
+        } else if (mode === 'dark') {
+          if (avg < tol) {
+            remove = true;
+          }
+        }
+
+        if (remove) data[i + 3] = 0;
+      }
+
+      offCtx.putImageData(imgData, 0, 0);
+      const resImg = new Image();
+      resImg.onload = () => {
+        appState.processedImage = resImg;
+        appState.isCutout = true;
+        document.getElementById('cutout-status').innerText = 'Latar Dihapus';
+        render();
+        showToast('Background berhasil diisolasi!');
+      };
+      resImg.src = off.toDataURL();
+    }
+
+    // Real-Time Camera Webcam Access
+    async function startWebcam() {
+      const modal = document.getElementById('camera-modal');
+      const video = document.getElementById('webcam-video');
+
+      try {
+        appState.mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+        video.srcObject = appState.mediaStream;
+        modal.classList.remove('hidden');
+      } catch (err) {
+        showToast('Kamera tidak dapat diakses atau izin ditolak', true);
+      }
+    }
+
+    function stopWebcam() {
+      if (appState.mediaStream) {
+        appState.mediaStream.getTracks().forEach(track => track.stop());
+        appState.mediaStream = null;
+      }
+      document.getElementById('camera-modal').classList.add('hidden');
+    }
+
+    function captureWebcam() {
+      const video = document.getElementById('webcam-video');
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = video.videoWidth || 1280;
+      tempCanvas.height = video.videoHeight || 720;
+      const tCtx = tempCanvas.getContext('2d');
+      tCtx.drawImage(video, 0, 0);
+
+      const captured = new Image();
+      captured.onload = () => {
+        stopWebcam();
+        activateCanvas(captured);
+        showToast('Foto kamera berhasil diambil!');
+      };
+      captured.src = tempCanvas.toDataURL('image/jpeg');
+    }
+
+    // ================= MASTER RENDER CANVAS =================
+    function render() {
+      if (!ctx || !appState.imageLoaded) return;
+      const W = canvas.width;
+      const H = canvas.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      // 1. Draw Background
+      drawStudioBackground(W, H);
+
+      // 2. Draw Podium 3D
+      drawPodium(W, H);
+
+      // 3. Draw Product with Studio Lighting Filters
+      drawProduct(W, H);
+
+      // 4. Draw Commercial Texts & Badges
+      if (appState.showText) {
+        drawPromoElements(W, H);
+      }
+    }
+
+    function drawStudioBackground(w, h) {
+      const theme = appState.templateTheme;
+
+      if (theme === 'marketplace_clean') {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, w, h);
+      } else if (theme === 'dark_luxury') {
+        const rad = ctx.createRadialGradient(w / 2, h * 0.45, 50, w / 2, h * 0.45, w * 0.75);
+        rad.addColorStop(0, '#1f2937');
+        rad.addColorStop(1, '#0b0f19');
+        ctx.fillStyle = rad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (theme === 'sage_nature') {
+        const rad = ctx.createRadialGradient(w / 2, h * 0.45, 60, w / 2, h * 0.45, w * 0.8);
+        rad.addColorStop(0, '#f0fdf4');
+        rad.addColorStop(1, '#bbf7d0');
+        ctx.fillStyle = rad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (theme === 'pastel_sweet') {
+        const grad = ctx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0, '#ffe4e6');
+        grad.addColorStop(1, '#fbcfe8');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      } else {
+        // Default: Minimalist Warm Studio
+        const rad = ctx.createRadialGradient(w / 2, h * 0.42, 60, w / 2, h * 0.42, w * 0.85);
+        rad.addColorStop(0, '#fafaf9');
+        rad.addColorStop(1, '#e7e5e4');
+        ctx.fillStyle = rad;
+        ctx.fillRect(0, 0, w, h);
+      }
+
+      // Soft vignette on bottom
+      const floor = ctx.createLinearGradient(0, h * 0.65, 0, h);
+      floor.addColorStop(0, 'rgba(0,0,0,0)');
+      floor.addColorStop(1, 'rgba(0,0,0,0.06)');
+      ctx.fillStyle = floor;
+      ctx.fillRect(0, h * 0.65, w, h * 0.35);
+    }
+
+    function drawPodium(w, h) {
+      if (appState.podium === 'none') return;
+      const cx = w / 2;
+      const cy = h * 0.76;
+      const rx = w * 0.38;
+      const ry = 65;
+      const height = 90;
+
+      ctx.save();
+      if (appState.podium === 'marble') {
+        // Cylinder Wall
+        const sideGrad = ctx.createLinearGradient(cx - rx, 0, cx + rx, 0);
+        sideGrad.addColorStop(0, '#cbd5e1');
+        sideGrad.addColorStop(0.3, '#f8fafc');
+        sideGrad.addColorStop(0.8, '#cbd5e1');
+        sideGrad.addColorStop(1, '#94a3b8');
+
+        ctx.fillStyle = sideGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI);
+        ctx.lineTo(cx + rx, cy + height);
+        ctx.ellipse(cx, cy + height, rx, ry, 0, 0, Math.PI, true);
+        ctx.closePath();
+        ctx.fill();
+
+        // Top Surface
+        const topGrad = ctx.createRadialGradient(cx, cy - 10, 10, cx, cy, rx);
+        topGrad.addColorStop(0, '#ffffff');
+        topGrad.addColorStop(0.8, '#f1f5f9');
+        topGrad.addColorStop(1, '#cbd5e1');
+
+        ctx.fillStyle = topGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+      } else if (appState.podium === 'wood') {
+        const side = ctx.createLinearGradient(cx - rx, 0, cx + rx, 0);
+        side.addColorStop(0, '#78350f');
+        side.addColorStop(0.5, '#b45309');
+        side.addColorStop(1, '#451a03');
+
+        ctx.fillStyle = side;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI);
+        ctx.lineTo(cx + rx, cy + height);
+        ctx.ellipse(cx, cy + height, rx, ry, 0, 0, Math.PI, true);
+        ctx.closePath();
+        ctx.fill();
+
+        const top = ctx.createRadialGradient(cx, cy, 10, cx, cy, rx);
+        top.addColorStop(0, '#d97706');
+        top.addColorStop(1, '#92400e');
+        ctx.fillStyle = top;
+        ctx.beginPath();
+        ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    function drawProduct(w, h) {
+      const img = appState.processedImage;
+      if (!img) return;
+
+      const baseW = w * 0.58;
+      const aspect = img.width / img.height;
+      const targetW = baseW * appState.scale;
+      const targetH = (baseW / aspect) * appState.scale;
+
+      const cx = (w / 2) + appState.posX;
+      const cy = (h * 0.50) + appState.posY;
+      const drawX = cx - targetW / 2;
+      const drawY = cy - targetH / 2;
+
+      ctx.save();
+
+      // Drop Contact Shadow
+      if (appState.hasShadow) {
+        ctx.save();
+        const sY = drawY + targetH - 10;
+        const sRx = targetW * 0.44;
+        const sRy = Math.max(12, targetH * 0.08);
+
+        const sGrad = ctx.createRadialGradient(cx, sY, 5, cx, sY, sRx);
+        sGrad.addColorStop(0, 'rgba(0,0,0,0.5)');
+        sGrad.addColorStop(0.5, 'rgba(0,0,0,0.2)');
+        sGrad.addColorStop(1, 'rgba(0,0,0,0)');
+
+        ctx.filter = 'blur(10px)';
+        ctx.fillStyle = sGrad;
+        ctx.beginPath();
+        ctx.ellipse(cx, sY, sRx, sRy, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      // Studio Filter Pipeline
+      ctx.filter = `brightness(${appState.brightness}%) contrast(${appState.contrast}%) saturate(${appState.saturate}%)`;
+      ctx.drawImage(img, drawX, drawY, targetW, targetH);
+      ctx.restore();
+    }
+
+    function drawPromoElements(w, h) {
+      ctx.save();
+      const isDark = appState.templateTheme === 'dark_luxury';
+
+      // Badge Top Left
+      ctx.fillStyle = '#4f46e5';
+      roundRect(ctx, 50, 50, 240, 44, 22);
+      ctx.fill();
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '800 16px "Plus Jakarta Sans", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('⭐ TOP SELLER UMKM', 170, 72);
+
+      // Bottom Typography
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'alphabetic';
+
+      // Brand
+      ctx.fillStyle = isDark ? '#fbbf24' : '#4f46e5';
+      ctx.font = '800 18px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(appState.brandText.toUpperCase(), 60, h - 110);
+
+      // Price Tag
+      ctx.fillStyle = '#10b981';
+      ctx.font = '900 42px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText(appState.priceText, 60, h - 55);
+
+      ctx.restore();
+    }
+
+    function roundRect(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    // Export Canvas HD
+    function downloadCanvasHD() {
+      if (!appState.imageLoaded) {
+        showToast('Unggah foto produk terlebih dahulu!', true);
+        return;
+      }
+      render();
+      const a = document.createElement('a');
+      a.download = `ProStudio_${Date.now()}.jpg`;
+      a.href = canvas.toDataURL('image/jpeg', 0.95);
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      showToast('Foto resolusi tinggi berhasil diunduh!');
+    }
+
+    // ================= AI PROMPT GENERATORS =================
+    function setupGenerators() {
+      // 1. Flyer Prompt
+      const flyerOut = document.getElementById('output-flyer-prompt');
+      document.getElementById('btn-generate-flyer-prompt').addEventListener('click', () => {
+        const style = document.getElementById('flyer-style').value;
+        const headline = document.getElementById('flyer-headline').value;
+        flyerOut.value = `/imagine prompt: professional commercial promotional flyer poster, centered product on modern studio stage, headline text "${headline}", style ${style}, clean layout, commercial advertising typography, 8k resolution, ray-tracing reflections, soft studio softbox lighting, graphic design award winner --ar 4:5 --v 6.0`;
+        showToast('Prompt flyer berhasil dibuat!');
+      });
+      document.getElementById('btn-copy-flyer').addEventListener('click', () => {
+        copyToClipboard(flyerOut.value);
+      });
+
+      // 2. Video Prompt (Dengan Fitur Mode Preset & Custom)
+      const videoOut = document.getElementById('output-video-prompt');
+      let currentVideoMode = 'auto'; // 'auto' | 'custom'
+
+      const btnModeAuto = document.getElementById('btn-video-mode-auto');
+      const btnModeCustom = document.getElementById('btn-video-mode-custom');
+      const viewAuto = document.getElementById('video-auto-view');
+      const viewCustom = document.getElementById('video-custom-view');
+      const customInput = document.getElementById('video-custom-input');
+
+      // Toggle Mode Tab
+      btnModeAuto.addEventListener('click', () => {
+        currentVideoMode = 'auto';
+        btnModeAuto.className = 'flex-1 py-1.5 px-3 rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-xs transition flex items-center justify-center gap-1.5';
+        btnModeCustom.className = 'flex-1 py-1.5 px-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition flex items-center justify-center gap-1.5';
+        viewAuto.classList.remove('hidden');
+        viewCustom.classList.add('hidden');
+      });
+
+      btnModeCustom.addEventListener('click', () => {
+        currentVideoMode = 'custom';
+        btnModeCustom.className = 'flex-1 py-1.5 px-3 rounded-lg bg-white dark:bg-slate-700 text-indigo-600 dark:text-indigo-400 shadow-xs transition flex items-center justify-center gap-1.5';
+        btnModeAuto.className = 'flex-1 py-1.5 px-3 rounded-lg text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition flex items-center justify-center gap-1.5';
+        viewCustom.classList.remove('hidden');
+        viewAuto.classList.add('hidden');
+      });
+
+      // Quick Chips for Custom Concept
+      document.querySelectorAll('.video-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const text = chip.dataset.chip;
+          if (customInput.value.trim().length > 0) {
+            customInput.value += `, ${text}`;
+          } else {
+            customInput.value = text;
+          }
+          chip.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-950/40', 'text-indigo-600');
+          showToast(`Menambahkan efek: ${chip.innerText}`);
+        });
+      });
+
+      // Generate Video Prompt Button
+      document.getElementById('btn-generate-video-prompt').addEventListener('click', () => {
+        const brand = appState.brandText || 'Commercial Product';
+
+        if (currentVideoMode === 'auto') {
+          const motion = document.getElementById('video-motion').value;
+          videoOut.value = `Cinematic 4k commercial product video of "${brand}", ${motion}, hyper-realistic studio lighting, gentle golden reflections, shallow depth of field, 60fps smooth cinematic motion, ultra-detailed textures, commercial TV ad quality --camera movement slow`;
+          showToast('Prompt video otomatis berhasil dibuat!');
+        } else {
+          // Custom Prompt Mode
+          const userIdea = customInput.value.trim() || 'Product positioned gracefully on a pedestal with subtle atmospheric movement';
+          const targetModel = document.getElementById('video-target-model').value;
+          const moodLighting = document.getElementById('video-lighting-mood').value;
+
+          videoOut.value = `[Model: ${targetModel}] High-end commercial product video of "${brand}". Scene concept: ${userIdea}. Lighting & Atmosphere: ${moodLighting}. Technical specs: 4K UHD, photorealistic textures, fluid physics simulation, 60fps cinematic slow-motion, shot on 35mm lens, color-graded for advertising --motion smooth --quality 2`;
+          showToast('Custom prompt video berhasil digenerate!');
+        }
+      });
+
+      document.getElementById('btn-copy-video').addEventListener('click', () => {
+        copyToClipboard(videoOut.value);
+      });
+
+      // 3. Caption Generator
+      const captionOut = document.getElementById('output-caption');
+      document.getElementById('btn-generate-caption').addEventListener('click', () => {
+        const tone = document.getElementById('caption-tone').value;
+        const brand = appState.brandText || 'Produk UMKM';
+        const price = appState.priceText || 'Rp 49.000';
+
+        if (tone === 'fomo') {
+          captionOut.value = `⚠️ PERINGATAN: STOK TERBATAS HARI INI SAJA! ⚠️\n\nSiapa cepat dia dapat! Dapatkan ${brand} dengan harga spesial hanya ${price} khusus checkout hari ini.\n\n✅ 100% Kualitas Terjamin & Terpercaya\n✅ Garansi Produk Asli\n\n👉 Klik link di bio sekarang sebelum kehabisan voucher diskonnya!\n\n#UMKMIndonesia #PromoSpesial #DiskonHariIni #ProdukViral #BeliLokal`;
+        } else if (tone === 'friendly') {
+          captionOut.value = `Yuk cobain yang lagi viral ini! ✨\n\nKenalin ${brand}, solusi praktis buat kamu dengan harga bersahabat banget cuma ${price}. Udah banyak review bintang 5 nya lho!\n\nKomen "MAU" di bawah ya buat dapetin gratis ongkir hari ini 👇🔥\n\n#ProdukLokal #RacunTikTok #SpillBarang #MurahBerkualitas`;
+        } else {
+          captionOut.value = `Hadirkan kualitas terbaik dari ${brand}.\n\nDirancang dengan teliti untuk kepuasan Anda. Dapatkan penawaran istimewa seharga ${price} dengan jaminan mutu dan kepuasan pelanggan.\n\nHubungi kontak atau kunjungi toko kami untuk pemesanan.\n\n#BanggaBuatanIndonesia #UMKMBerdaya #KualitasPremium`;
+        }
+        showToast('Caption promosi berhasil digenerate!');
+      });
+      document.getElementById('btn-copy-caption').addEventListener('click', () => {
+        copyToClipboard(captionOut.value);
+      });
+    }
+
+    // Helper: Copy to Clipboard
+    function copyToClipboard(text) {
+      if (!text) return;
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('Teks berhasil disalin ke clipboard!');
+    }
+
+    // Helper: Toast Message
+    function showToast(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      const text = document.getElementById('toast-text');
+      text.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-20', 'opacity-0');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
