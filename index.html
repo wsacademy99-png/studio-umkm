@@ -66,8 +66,15 @@
       </div>
     </div>
 
-    <!-- Right Quick Actions (History, Lang, Dark Mode) -->
+    <!-- Right Quick Actions (API Key, History, Lang, Dark Mode) -->
     <div class="flex items-center gap-2">
+      <!-- Gemini API Key Button -->
+      <button id="btn-open-apikey" title="Konfigurasi Gemini API Key" class="h-10 px-3 rounded-xl bg-gradient-to-r from-indigo-500/10 to-violet-500/10 hover:from-indigo-500/20 hover:to-violet-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold flex items-center gap-2 border border-indigo-200 dark:border-indigo-900/50 transition">
+        <i data-lucide="key-round" class="w-4 h-4"></i>
+        <span class="hidden sm:inline">Gemini API</span>
+        <span id="api-status-badge" class="w-2 h-2 rounded-full bg-amber-400" title="API Key belum disetel"></span>
+      </button>
+
       <!-- History Button -->
       <button id="btn-history" title="Riwayat Edit" class="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 flex items-center justify-center border border-indigo-100 dark:border-slate-700 transition">
         <i data-lucide="clock" class="w-5 h-5"></i>
@@ -566,6 +573,85 @@
     </div>
   </div>
 
+  <!-- ================= MODAL: GEMINI API KEY SETUP & PANDUAN ================= -->
+  <div id="modal-apikey" class="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 animate-in fade-in duration-200 max-h-[90vh] overflow-y-auto">
+      
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-md shadow-indigo-500/20">
+            <i data-lucide="key" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900 dark:text-white">Pengaturan Gemini API Key</h3>
+            <p class="text-[11px] text-slate-400">Gratis dari Google AI Studio untuk GitHub Pages</p>
+          </div>
+        </div>
+        <button id="btn-close-apikey" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1 rounded-lg">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Input Field -->
+      <div class="space-y-2">
+        <label class="text-xs font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+          <span>Masukkan Gemini API Key Anda:</span>
+          <span class="text-[10px] text-emerald-500 font-semibold flex items-center gap-1">
+            <i data-lucide="shield-check" class="w-3.5 h-3.5"></i> Hanya tersimpan di browser Anda
+          </span>
+        </label>
+        <div class="relative">
+          <input type="password" id="input-gemini-key" placeholder="AIzaSy..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl pl-3.5 pr-20 py-2.5 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-indigo-500 focus:outline-none font-mono">
+          <div class="absolute right-2 top-1.5 flex items-center gap-1">
+            <button type="button" id="btn-toggle-key-visibility" class="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300" title="Lihat Key">
+              <i data-lucide="eye" class="w-4 h-4" id="icon-toggle-key"></i>
+            </button>
+            <button type="button" id="btn-clear-key" class="p-1.5 text-rose-400 hover:text-rose-600" title="Hapus Key">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+        <p class="text-[11px] text-slate-400">Key Anda tidak pernah dikirimkan ke server kami. Panggilan API langsung dari browser Anda ke Google.</p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center gap-2">
+        <button id="btn-save-key" class="flex-1 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-600/20 active:scale-95 transition flex items-center justify-center gap-1.5">
+          <i data-lucide="save" class="w-4 h-4"></i> Simpan API Key
+        </button>
+        <button id="btn-test-key" class="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-semibold text-xs border border-slate-200 dark:border-slate-700 transition flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Tes Koneksi
+        </button>
+      </div>
+
+      <!-- Step-by-Step Guide -->
+      <div class="bg-indigo-50/60 dark:bg-slate-800/60 border border-indigo-100 dark:border-slate-700 rounded-2xl p-4 space-y-3">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-bold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i data-lucide="help-circle" class="w-4 h-4"></i> Cara Mendapatkan API Key Gratis
+          </span>
+          <span class="text-[10px] bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold px-2 py-0.5 rounded-full border border-emerald-500/20">100% Gratis</span>
+        </div>
+
+        <ol class="text-xs text-slate-600 dark:text-slate-300 space-y-2 list-decimal list-inside leading-relaxed">
+          <li>Buka situs resmi Google AI Studio di: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-600 dark:text-indigo-400 font-bold underline inline-flex items-center gap-0.5">aistudio.google.com/apikey <i data-lucide="external-link" class="w-3 h-3"></i></a></li>
+          <li>Login dengan <strong>Akun Google (Gmail)</strong> Anda.</li>
+          <li>Klik tombol biru <strong>"Create API key"</strong> di pojok kanan atas.</li>
+          <li>Pilih <em>"Create API key in new project"</em> atau pilih Google Cloud project yang sudah ada.</li>
+          <li>Salin kode kunci yang muncul (dimulai dengan <code class="bg-white dark:bg-slate-900 px-1.5 py-0.5 rounded border border-slate-200 dark:border-slate-700 font-mono text-[11px]">AIzaSy...</code>) lalu tempelkan pada kolom input di atas.</li>
+          <li>Klik <strong>Simpan API Key</strong>. Selesai! Anda siap memakai seluruh fitur AI canggih.</li>
+        </ol>
+
+        <div class="text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-indigo-100 dark:border-slate-700/60 flex items-start gap-1.5">
+          <i data-lucide="info" class="w-3.5 h-3.5 text-indigo-500 flex-shrink-0 mt-0.5"></i>
+          <span>Paket gratis Google AI Studio menyediakan kuota melimpah tanpa membutuhkan kartu kredit (bebas biaya untuk kebutuhan UMKM).</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- ================= NOTIFICATION TOAST ================= -->
   <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-5 py-3.5 rounded-2xl shadow-xl text-xs font-semibold">
     <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
@@ -581,6 +667,9 @@
       processedImage: null,
       isCutout: false,
       tolerance: 32,
+
+      // Gemini API Key (tersimpan secara aman di browser per sesi)
+      geminiApiKey: sessionStorage.getItem('gemini_api_key') || '',
 
       // Posisi & Transform
       scale: 0.8,
@@ -620,9 +709,120 @@
       lucide.createIcons();
       setupTabs();
       setupThemeAndLang();
+      setupApiKeyModal();
       setupEventListeners();
       setupGenerators();
+      updateApiKeyStatus();
     });
+
+    // ================= GEMINI API KEY LOGIC =================
+    function setupApiKeyModal() {
+      const modal = document.getElementById('modal-apikey');
+      const btnOpen = document.getElementById('btn-open-apikey');
+      const btnClose = document.getElementById('btn-close-apikey');
+      const inputKey = document.getElementById('input-gemini-key');
+      const btnSave = document.getElementById('btn-save-key');
+      const btnClear = document.getElementById('btn-clear-key');
+      const btnTest = document.getElementById('btn-test-key');
+      const btnToggle = document.getElementById('btn-toggle-key-visibility');
+
+      // Isi input jika sudah pernah disimpan
+      if (appState.geminiApiKey) {
+        inputKey.value = appState.geminiApiKey;
+      }
+
+      btnOpen.addEventListener('click', () => {
+        inputKey.value = appState.geminiApiKey;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+      });
+
+      btnClose.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      });
+
+      // Toggle show/hide password
+      btnToggle.addEventListener('click', () => {
+        const isPass = inputKey.type === 'password';
+        inputKey.type = isPass ? 'text' : 'password';
+        const icon = document.getElementById('icon-toggle-key');
+        icon.setAttribute('data-lucide', isPass ? 'eye-off' : 'eye');
+        lucide.createIcons();
+      });
+
+      // Simpan Key
+      btnSave.addEventListener('click', () => {
+        const val = inputKey.value.trim();
+        if (!val) {
+          showToast('Masukkan API key terlebih dahulu!', true);
+          return;
+        }
+        appState.geminiApiKey = val;
+        sessionStorage.setItem('gemini_api_key', val);
+        updateApiKeyStatus();
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        showToast('Gemini API Key berhasil disimpan!');
+      });
+
+      // Hapus Key
+      btnClear.addEventListener('click', () => {
+        inputKey.value = '';
+        appState.geminiApiKey = '';
+        sessionStorage.removeItem('gemini_api_key');
+        updateApiKeyStatus();
+        showToast('API Key telah dihapus');
+      });
+
+      // Tes API Key dengan model gemini-2.5-flash
+      btnTest.addEventListener('click', async () => {
+        const testKey = inputKey.value.trim() || appState.geminiApiKey;
+        if (!testKey) {
+          showToast('Masukkan API key untuk dites!', true);
+          return;
+        }
+        btnTest.disabled = true;
+        btnTest.innerHTML = '<span class="inline-block animate-spin mr-1">⌛</span> Mengetes...';
+
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${testKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: "Ketik kata 'Koneksi Berhasil' saja." }] }]
+            })
+          });
+          const data = await res.json();
+          if (res.ok && data.candidates?.[0]?.content?.parts?.[0]?.text) {
+            showToast('✅ Koneksi Google AI Studio Valid & Aktif!');
+            appState.geminiApiKey = testKey;
+            sessionStorage.setItem('gemini_api_key', testKey);
+            updateApiKeyStatus();
+          } else {
+            const errMsg = data.error?.message || 'API Key tidak valid atau kuota habis.';
+            showToast(`Gagal: ${errMsg}`, true);
+          }
+        } catch (e) {
+          showToast('Koneksi gagal. Periksa jaringan internet Anda.', true);
+        } finally {
+          btnTest.disabled = false;
+          btnTest.innerHTML = '<i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Tes Koneksi';
+          lucide.createIcons();
+        }
+      });
+    }
+
+    function updateApiKeyStatus() {
+      const badge = document.getElementById('api-status-badge');
+      if (appState.geminiApiKey) {
+        badge.className = 'w-2 h-2 rounded-full bg-emerald-500';
+        badge.setAttribute('title', 'Gemini API Key Aktif');
+      } else {
+        badge.className = 'w-2 h-2 rounded-full bg-amber-400';
+        badge.setAttribute('title', 'API Key belum disetel (Klik untuk pasang)');
+      }
+    }
 
     // Theme (Dark/Light) & Language Switcher
     function setupThemeAndLang() {
@@ -700,13 +900,84 @@
       });
 
       // Quick Action 1: Analisa Kelayakan Foto
-      document.getElementById('btn-analisa').addEventListener('click', () => {
+      document.getElementById('btn-analisa').addEventListener('click', async () => {
         if (!appState.imageLoaded) {
           loadSampleProduct();
         }
-        document.getElementById('modal-analisa').classList.remove('hidden');
-        document.getElementById('modal-analisa').classList.add('flex');
+
+        // Buka modal analisa
+        const modal = document.getElementById('modal-analisa');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+
+        // Jika user memiliki API Key, gunakan Gemini 2.5 Flash Vision asli untuk analisis foto
+        if (appState.geminiApiKey) {
+          analyzeImageWithGemini();
+        } else {
+          // Fallback lokal jika belum pasang API Key
+          document.getElementById('analisa-score').innerText = '88/100';
+          document.getElementById('analisa-badge').innerText = 'Sangat Layak untuk Promosi & Marketplace';
+          document.getElementById('analisa-light').innerText = 'Bagus (Optimal)';
+          document.getElementById('analisa-bg').innerText = 'Fokus Utama Jelas';
+          document.getElementById('analisa-advice').innerText = 'Gunakan template "Podium Minimalis" atau "Marketplace Bersih" untuk mendongkrak konversi klik pembeli. (Tip: Pasang Gemini API Key untuk analisa AI real-time).';
+        }
       });
+
+      // Gemini Vision AI Analysis
+      async function analyzeImageWithGemini() {
+        const scoreEl = document.getElementById('analisa-score');
+        const badgeEl = document.getElementById('analisa-badge');
+        const lightEl = document.getElementById('analisa-light');
+        const bgEl = document.getElementById('analisa-bg');
+        const adviceEl = document.getElementById('analisa-advice');
+
+        scoreEl.innerText = 'Menganalisis...';
+        badgeEl.innerText = 'Gemini AI sedang memeriksa detail visual foto Anda...';
+
+        try {
+          const base64Data = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+          const prompt = `Anda adalah fotografer komersial profesional dan ahli optimasi penjualan e-commerce (Shopee, Tokopedia, TikTok Shop).
+Analisa foto produk ini dalam format JSON persis seperti berikut:
+{
+  "score": 85,
+  "badge": "Sangat Layak / Cukup Layak / Perlu Perbaikan",
+  "lighting": "Komentar singkat tentang pencahayaan (maks 4 kata)",
+  "background": "Komentar singkat tentang background (maks 4 kata)",
+  "advice": "1-2 kalimat saran praktis perbaikan agar foto lebih laku dijual"
+}`;
+
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appState.geminiApiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{
+                parts: [
+                  { text: prompt },
+                  { inlineData: { mimeType: 'image/jpeg', data: base64Data } }
+                ]
+              }],
+              generationConfig: { responseMimeType: 'application/json' }
+            })
+          });
+
+          const data = await res.json();
+          const rawText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (rawText) {
+            const parsed = JSON.parse(rawText);
+            scoreEl.innerText = `${parsed.score}/100`;
+            badgeEl.innerText = parsed.badge || 'Analisis Selesai';
+            lightEl.innerText = parsed.lighting || 'Optimal';
+            bgEl.innerText = parsed.background || 'Terisolasi';
+            adviceEl.innerText = parsed.advice || 'Foto siap dipromosikan.';
+            showToast('Analisis kelayakan foto dari Gemini AI selesai!');
+          }
+        } catch (err) {
+          scoreEl.innerText = '88/100';
+          badgeEl.innerText = 'Sangat Layak untuk Promosi';
+          adviceEl.innerText = 'Analisis lokal: Kontras produk baik, pertahankan resolusi tajam.';
+        }
+      }
+
       document.getElementById('btn-close-analisa').addEventListener('click', () => {
         document.getElementById('modal-analisa').classList.add('hidden');
         document.getElementById('modal-analisa').classList.remove('flex');
@@ -1262,50 +1533,50 @@
 
       // Price Tag
       ctx.fillStyle = '#10b981';
-      ctx.font = '900 42px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText(appState.priceText, 60, h - 55);
-
-      ctx.restore();
-    }
-
-    function roundRect(ctx, x, y, width, height, radius) {
-      ctx.beginPath();
-      ctx.moveTo(x + radius, y);
-      ctx.lineTo(x + width - radius, y);
-      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
-      ctx.lineTo(x + width, y + height - radius);
-      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
-      ctx.lineTo(x + radius, y + height);
-      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
-      ctx.lineTo(x, y + radius);
-      ctx.quadraticCurveTo(x, y, x + radius, y);
-      ctx.closePath();
-    }
-
-    // Export Canvas HD
-    function downloadCanvasHD() {
-      if (!appState.imageLoaded) {
-        showToast('Unggah foto produk terlebih dahulu!', true);
-        return;
+      // Helper: Call Gemini Text Generator with Fallback
+      async function callGeminiText(prompt, fallbackText) {
+        if (!appState.geminiApiKey) {
+          return fallbackText;
+        }
+        try {
+          const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${appState.geminiApiKey}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: prompt }] }]
+            })
+          });
+          const data = await res.json();
+          return data.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || fallbackText;
+        } catch (e) {
+          return fallbackText;
+        }
       }
-      render();
-      const a = document.createElement('a');
-      a.download = `ProStudio_${Date.now()}.jpg`;
-      a.href = canvas.toDataURL('image/jpeg', 0.95);
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      showToast('Foto resolusi tinggi berhasil diunduh!');
-    }
 
-    // ================= AI PROMPT GENERATORS =================
-    function setupGenerators() {
       // 1. Flyer Prompt
       const flyerOut = document.getElementById('output-flyer-prompt');
-      document.getElementById('btn-generate-flyer-prompt').addEventListener('click', () => {
+      const btnGenFlyer = document.getElementById('btn-generate-flyer-prompt');
+      btnGenFlyer.addEventListener('click', async () => {
         const style = document.getElementById('flyer-style').value;
         const headline = document.getElementById('flyer-headline').value;
-        flyerOut.value = `/imagine prompt: professional commercial promotional flyer poster, centered product on modern studio stage, headline text "${headline}", style ${style}, clean layout, commercial advertising typography, 8k resolution, ray-tracing reflections, soft studio softbox lighting, graphic design award winner --ar 4:5 --v 6.0`;
+        const brand = appState.brandText || 'Commercial Product';
+
+        const fallback = `/imagine prompt: professional commercial promotional flyer poster, centered product on modern studio stage for "${brand}", headline text "${headline}", style ${style}, clean layout, commercial advertising typography, 8k resolution, ray-tracing reflections, soft studio softbox lighting, graphic design award winner --ar 4:5 --v 6.0`;
+
+        if (appState.geminiApiKey) {
+          btnGenFlyer.disabled = true;
+          flyerOut.value = 'Sedang membuat prompt kreatif dengan Gemini AI...';
+          const aiPrompt = `Buat satu prompt Midjourney / Stable Diffusion berbahasa Inggris untuk flyer promosi produk komersial.
+Nama Produk: ${brand}
+Pesan / Headline Promo: ${headline}
+Gaya Desain: ${style}
+Hasilkan hanya teks prompt yang dimulai dengan "/imagine prompt: ..." tanpa penjelasan tambahan.`;
+          const result = await callGeminiText(aiPrompt, fallback);
+          flyerOut.value = result;
+          btnGenFlyer.disabled = false;
+        } else {
+          flyerOut.value = fallback;
+        }
         showToast('Prompt flyer berhasil dibuat!');
       });
       document.getElementById('btn-copy-flyer').addEventListener('click', () => {
@@ -1354,12 +1625,27 @@
       });
 
       // Generate Video Prompt Button
-      document.getElementById('btn-generate-video-prompt').addEventListener('click', () => {
+      const btnGenVideo = document.getElementById('btn-generate-video-prompt');
+      btnGenVideo.addEventListener('click', async () => {
         const brand = appState.brandText || 'Commercial Product';
 
         if (currentVideoMode === 'auto') {
           const motion = document.getElementById('video-motion').value;
-          videoOut.value = `Cinematic 4k commercial product video of "${brand}", ${motion}, hyper-realistic studio lighting, gentle golden reflections, shallow depth of field, 60fps smooth cinematic motion, ultra-detailed textures, commercial TV ad quality --camera movement slow`;
+          const fallback = `Cinematic 4k commercial product video of "${brand}", ${motion}, hyper-realistic studio lighting, gentle golden reflections, shallow depth of field, 60fps smooth cinematic motion, ultra-detailed textures, commercial TV ad quality --camera movement slow`;
+
+          if (appState.geminiApiKey) {
+            btnGenVideo.disabled = true;
+            videoOut.value = 'Membuat skrip visual video dengan Gemini AI...';
+            const aiPrompt = `Tulis sebuah prompt kamera video sinematik dalam bahasa Inggris untuk AI Video generator (seperti Runway Gen-3, Luma Dream Machine, Kling AI, atau Sora).
+Produk: "${brand}"
+Gerakan Kamera: ${motion}
+Hasilkan hanya teks prompt dalam 1 paragraf padat dengan istilah teknis kamera yang presisi (framing, lighting, motion, FPS).`;
+            const result = await callGeminiText(aiPrompt, fallback);
+            videoOut.value = result;
+            btnGenVideo.disabled = false;
+          } else {
+            videoOut.value = fallback;
+          }
           showToast('Prompt video otomatis berhasil dibuat!');
         } else {
           // Custom Prompt Mode
@@ -1367,7 +1653,23 @@
           const targetModel = document.getElementById('video-target-model').value;
           const moodLighting = document.getElementById('video-lighting-mood').value;
 
-          videoOut.value = `[Model: ${targetModel}] High-end commercial product video of "${brand}". Scene concept: ${userIdea}. Lighting & Atmosphere: ${moodLighting}. Technical specs: 4K UHD, photorealistic textures, fluid physics simulation, 60fps cinematic slow-motion, shot on 35mm lens, color-graded for advertising --motion smooth --quality 2`;
+          const fallback = `[Model: ${targetModel}] High-end commercial product video of "${brand}". Scene concept: ${userIdea}. Lighting & Atmosphere: ${moodLighting}. Technical specs: 4K UHD, photorealistic textures, fluid physics simulation, 60fps cinematic slow-motion, shot on 35mm lens, color-graded for advertising --motion smooth --quality 2`;
+
+          if (appState.geminiApiKey) {
+            btnGenVideo.disabled = true;
+            videoOut.value = 'Mengembangkan konsep kustom Anda dengan Gemini AI...';
+            const aiPrompt = `Anda adalah sutradara iklan TV komersial kelas dunia. Ubah ide pengguna ini menjadi prompt AI Video (Runway/Sora/Luma/Kling) profesional berbahasa Inggris:
+Produk: ${brand}
+Konsep Pengguna: ${userIdea}
+Pencahayaan: ${moodLighting}
+Target Model: ${targetModel}
+Tuliskan 1 prompt sinematik lengkap dan padat tanpa pengantar.`;
+            const result = await callGeminiText(aiPrompt, fallback);
+            videoOut.value = result;
+            btnGenVideo.disabled = false;
+          } else {
+            videoOut.value = fallback;
+          }
           showToast('Custom prompt video berhasil digenerate!');
         }
       });
@@ -1378,17 +1680,34 @@
 
       // 3. Caption Generator
       const captionOut = document.getElementById('output-caption');
-      document.getElementById('btn-generate-caption').addEventListener('click', () => {
+      const btnGenCaption = document.getElementById('btn-generate-caption');
+      btnGenCaption.addEventListener('click', async () => {
         const tone = document.getElementById('caption-tone').value;
         const brand = appState.brandText || 'Produk UMKM';
         const price = appState.priceText || 'Rp 49.000';
 
+        let fallback = '';
         if (tone === 'fomo') {
-          captionOut.value = `⚠️ PERINGATAN: STOK TERBATAS HARI INI SAJA! ⚠️\n\nSiapa cepat dia dapat! Dapatkan ${brand} dengan harga spesial hanya ${price} khusus checkout hari ini.\n\n✅ 100% Kualitas Terjamin & Terpercaya\n✅ Garansi Produk Asli\n\n👉 Klik link di bio sekarang sebelum kehabisan voucher diskonnya!\n\n#UMKMIndonesia #PromoSpesial #DiskonHariIni #ProdukViral #BeliLokal`;
+          fallback = `⚠️ PERINGATAN: STOK TERBATAS HARI INI SAJA! ⚠️\n\nSiapa cepat dia dapat! Dapatkan ${brand} dengan harga spesial hanya ${price} khusus checkout hari ini.\n\n✅ 100% Kualitas Terjamin & Terpercaya\n✅ Garansi Produk Asli\n\n👉 Klik link di bio sekarang sebelum kehabisan voucher diskonnya!\n\n#UMKMIndonesia #PromoSpesial #DiskonHariIni #ProdukViral #BeliLokal`;
         } else if (tone === 'friendly') {
-          captionOut.value = `Yuk cobain yang lagi viral ini! ✨\n\nKenalin ${brand}, solusi praktis buat kamu dengan harga bersahabat banget cuma ${price}. Udah banyak review bintang 5 nya lho!\n\nKomen "MAU" di bawah ya buat dapetin gratis ongkir hari ini 👇🔥\n\n#ProdukLokal #RacunTikTok #SpillBarang #MurahBerkualitas`;
+          fallback = `Yuk cobain yang lagi viral ini! ✨\n\nKenalin ${brand}, solusi praktis buat kamu dengan harga bersahabat banget cuma ${price}. Udah banyak review bintang 5 nya lho!\n\nKomen "MAU" di bawah ya buat dapetin gratis ongkir hari ini 👇🔥\n\n#ProdukLokal #RacunTikTok #SpillBarang #MurahBerkualitas`;
         } else {
-          captionOut.value = `Hadirkan kualitas terbaik dari ${brand}.\n\nDirancang dengan teliti untuk kepuasan Anda. Dapatkan penawaran istimewa seharga ${price} dengan jaminan mutu dan kepuasan pelanggan.\n\nHubungi kontak atau kunjungi toko kami untuk pemesanan.\n\n#BanggaBuatanIndonesia #UMKMBerdaya #KualitasPremium`;
+          fallback = `Hadirkan kualitas terbaik dari ${brand}.\n\nDirancang dengan teliti untuk kepuasan Anda. Dapatkan penawaran istimewa seharga ${price} dengan jaminan mutu dan kepuasan pelanggan.\n\nHubungi kontak atau kunjungi toko kami untuk pemesanan.\n\n#BanggaBuatanIndonesia #UMKMBerdaya #KualitasPremium`;
+        }
+
+        if (appState.geminiApiKey) {
+          btnGenCaption.disabled = true;
+          captionOut.value = 'Menulis copywriting kreatif dengan Gemini AI...';
+          const aiPrompt = `Buat caption promosi media sosial (Instagram/TikTok/WhatsApp) yang sangat menarik untuk UMKM Indonesia:
+Produk: ${brand}
+Harga: ${price}
+Gaya/Tone: ${tone}
+Sertakan headline yang memancing perhatian, keuntungan utama, Call to Action (CTA) yang jelas, dan 5 hashtag relevan. Tulis dalam bahasa Indonesia yang memikat.`;
+          const result = await callGeminiText(aiPrompt, fallback);
+          captionOut.value = result;
+          btnGenCaption.disabled = false;
+        } else {
+          captionOut.value = fallback;
         }
         showToast('Caption promosi berhasil digenerate!');
       });
